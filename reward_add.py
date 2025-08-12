@@ -12,6 +12,7 @@ def clean_code(code_str: str) -> str:
     m = re.search(r"(^\s*def\s+[A-Za-z_]\w*\s*\(.*)", s, flags=re.S | re.M)
     if m:
         s = s[m.start():]
+    print(f'🤖{s.strip()}')
     return s.strip()
 
 def score_add_fix(code_str: str) -> float:
