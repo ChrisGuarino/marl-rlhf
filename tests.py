@@ -12,7 +12,6 @@ def clean_code(code_str: str) -> str:
     m = re.search(r"(^\s*def\s+[A-Za-z_]\w*\s*\(.*)", s, flags=re.S | re.M)
     if m:
         s = s[m.start():]
-    print(f'🤖{s.strip()}')
     return s.strip()
 
 def score_add_fix(code_str: str) -> float:
@@ -29,6 +28,25 @@ def score_add_fix(code_str: str) -> float:
         return passed / len(tests)
     except Exception:
         traceback.print_exc()  # helpful while developing
+        return 0.0
+    
+def score_is_palindrome_fix(tests, code_str: str) -> float:
+    """Return fraction of tests passed for is_palindrome(s) ignoring case & spaces."""
+    try:
+        code = clean_code(code_str)
+        ns = {}
+        exec(code, ns, ns)
+        if "is_palindrome" not in ns or not callable(ns["is_palindrome"]):
+            return 0.0
+
+        passed = 0
+        for s, expected in tests:
+            got = ns["is_palindrome"](s)
+            if isinstance(got, bool) and got == expected:
+                passed += 1
+        return passed / len(tests)
+    except Exception:
+        traceback.print_exc()
         return 0.0
 
 if __name__ == "__main__":
