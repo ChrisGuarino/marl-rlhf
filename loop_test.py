@@ -1,6 +1,10 @@
 # step2_eval_candidate.py
 import ollama, statistics
-from tests import *  # your judge
+from support import *  # your judge
+
+
+LOG_PATH = "logs/runs.jsonl"
+MODEL_ID = "ppo-llama"
 
 ##### Test Prompts #####
 
@@ -18,7 +22,9 @@ PROMPT = """You are fixing a buggy Python function.
 Return ONLY the corrected Python function. Do NOT include backticks or explanations.
 Start your answer with: def is_palindrome(
 
-# The function should return True if s is a palindrome ignoring case and spaces.
+Requirements:
+- Return True if s is a palindrome ignoring CASE and SPACES.
+
 # Buggy version:
 def is_palindrome(s):
     return s == s[::-1]
@@ -36,17 +42,36 @@ tests = [
     ("", True),
     ("   ", True),
     ("abc cba", True),
-    ("ab!ba", False),   # NEW: punctuation should NOT be ignored
+    ("ab!ba", True),  
+    ("snakes", False)
 ]
-
 #####################
 
-def one_try(temp=0.7):
-    resp = ollama.generate(model="ppo-llama", prompt=PROMPT, options={"temperature": temp})
+def one_run(temp=0.9):
+    #1) Call local LLM
+    resp = ollama.generate(model=MODEL_ID, prompt=PROMPT, options={"temperature": temp})
     code = resp["response"]
-    score = score_is_palindrome_fix(tests, code)
-    print("\n--- CANDIDATE ---\n", code, "\nSCORE:", score)  # helpful to see what it produced
-    return score
 
-scores = [one_try() for _ in range(5)]
+    #2) Score the generated code
+    reward = score_is_palindrome_fix(tests, code)
+    print("\n--- CANDIDATE ---\n", code, "\nSCORE:", reward) 
+
+    #3) Log the reward
+    rec = {
+        "ts": now_iso(),
+        "task_id": "testing",
+        "model": MODEL_ID,
+        "options": {"temperature": temp},
+        "prompt": PROMPT,
+        "response": code,
+        "reward": reward,
+    }
+    append_jsonl(LOG_PATH, rec)
+    
+    # 4) quick console feedback
+    print("Reward:", reward)
+    print("Logged to:", LOG_PATH)
+
+    return reward
+scores = [one_run() for _ in range(5)]
 print("\nSUMMARY -> scores:", scores, "avg:", statistics.mean(scores))

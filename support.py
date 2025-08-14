@@ -35,7 +35,7 @@ def score_is_palindrome_fix(tests, code_str: str) -> float:
     try:
         code = clean_code(code_str)
         ns = {}
-        exec(code, ns, ns)
+        exec(code, ns, ns) 
         if "is_palindrome" not in ns or not callable(ns["is_palindrome"]):
             return 0.0
 
@@ -44,13 +44,21 @@ def score_is_palindrome_fix(tests, code_str: str) -> float:
             got = ns["is_palindrome"](s)
             if isinstance(got, bool) and got == expected:
                 passed += 1
+                print(f'Test: {s}, Got: {got}, Expected: {expected}')
+            else: print(f'⚠️Fail -> Test: {s}, Got: {got}, Expected: {expected}')
         return passed / len(tests)
     except Exception:
         traceback.print_exc()
         return 0.0
 
-if __name__ == "__main__":
-    good = "def add(a,b):\n    return a+b\n"
-    bad  = "def add(a,b):\n    return a*b\n"
-    print("good:", score_add_fix(good))  # expect 1.0
-    print("bad :", score_add_fix(bad))   # expect 0.0
+import json, os, time
+from typing import Any, Dict
+
+def append_jsonl(path: str, record: Dict[str, Any]) -> None:
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+def now_iso() -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime())
+

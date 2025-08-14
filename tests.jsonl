@@ -1,0 +1,60 @@
+{"task": "add", "input": [1, 2], "expected": 3}
+{"task": "add", "input": [-1, 5], "expected": 4}
+{"task": "add", "input": [0, 0], "expected": 0}
+{"task": "add", "input": [-3, -7], "expected": -10}
+
+{"task": "average", "input": [[1, 2, 3]], "expected": 2.0}
+{"task": "average", "input": [[1.0, 2.0, 3.0]], "expected": 2.0}
+{"task": "average", "input": [[-1, 1]], "expected": 0.0}
+{"task": "average", "input": [[10]], "expected": 10.0}
+{"task": "average", "input": [[]], "expected": 0.0}
+
+{"task": "factorial", "input": [0], "expected": 1}
+{"task": "factorial", "input": [1], "expected": 1}
+{"task": "factorial", "input": [5], "expected": 120}
+{"task": "factorial", "input": [7], "expected": 5040}
+{"task": "factorial", "input": [-1], "expected": "ValueError"}
+
+{"task": "is_palindrome", "input": ["racecar"], "expected": true}
+{"task": "is_palindrome", "input": ["Race Car"], "expected": true}
+{"task": "is_palindrome", "input": ["nurses run"], "expected": true}
+{"task": "is_palindrome", "input": ["hello"], "expected": false}
+{"task": "is_palindrome", "input": ["A man a plan a canal Panama"], "expected": true}
+{"task": "is_palindrome", "input": [""], "expected": true}
+{"task": "is_palindrome", "input": ["   "], "expected": true}
+{"task": "is_palindrome", "input": ["ab!ba"], "expected": true}
+{"task": "is_palindrome", "input": ["ab, ba"], "expected": false}
+
+{"task": "reverse_words", "input": ["hello world"], "expected": "world hello"}
+{"task": "reverse_words", "input": ["  multiple   spaces here "], "expected": "here spaces multiple"}
+{"task": "reverse_words", "input": ["a"], "expected": "a"}
+{"task": "reverse_words", "input": ["😀 smile wide"], "expected": "wide smile 😀"}
+{"task": "reverse_words", "input": ["你好 世界"], "expected": "世界 你好"}
+{"task": "reverse_words", "input": [""], "expected": ""}
+
+{"task": "is_prime", "input": [0], "expected": false}
+{"task": "is_prime", "input": [1], "expected": false}
+{"task": "is_prime", "input": [2], "expected": true}
+{"task": "is_prime", "input": [3], "expected": true}
+{"task": "is_prime", "input": [4], "expected": false}
+{"task": "is_prime", "input": [17], "expected": true}
+{"task": "is_prime", "input": [18], "expected": false}
+{"task": "is_prime", "input": [19], "expected": true}
+{"task": "is_prime", "input": [97], "expected": true}
+{"task": "is_prime", "input": [100], "expected": false}
+
+{"task": "fizzbuzz", "input": [1], "expected": ["1"]}
+{"task": "fizzbuzz", "input": [3], "expected": ["1", "2", "Fizz"]}
+{"task": "fizzbuzz", "input": [5], "expected": ["1", "2", "Fizz", "4", "Buzz"]}
+{"task": "fizzbuzz", "input": [15], "expected": ["1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz"]}
+
+{"task": "merge_sorted_lists", "input": [[1, 3, 5], [2, 4, 6]], "expected": [1, 2, 3, 4, 5, 6]}
+{"task": "merge_sorted_lists", "input": [[], [1, 2]], "expected": [1, 2]}
+{"task": "merge_sorted_lists", "input": [[1, 2], []], "expected": [1, 2]}
+{"task": "merge_sorted_lists", "input": [[1, 1, 2], [1, 3]], "expected": [1, 1, 1, 2, 3]}
+{"task": "merge_sorted_lists", "input": [[0, 2, 2], [2, 2, 3]], "expected": [0, 2, 2, 2, 2, 3]}
+
+{"task": "csv_to_dicts", "input": ["name,age\nAlice,30\nBob,25\n"], "expected": [{"name": "Alice", "age": "30"}, {"name": "Bob", "age": "25"}]}
+{"task": "csv_to_dicts", "input": ["name,city,zip\n\n\n"], "expected": []}
+{"task": "csv_to_dicts", "input": [""], "expected": []}
+{"task": "csv_to_dicts", "input": ["a,b\n1,2\n3,4\n"], "expected": [{"a": "1", "b": "2"}, {"a": "3", "b": "4"}]}

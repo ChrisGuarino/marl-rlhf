@@ -1,6 +1,6 @@
 # step2_eval_candidate.py
 import ollama
-from tests import score_add_fix  # your judge
+from support import score_add_fix  # your judge
 
 PROMPT = """The following function is supposed to add two numbers, but it has a bug.
 Return ONLY the corrected Python function. Do NOT include backticks or explanation.
