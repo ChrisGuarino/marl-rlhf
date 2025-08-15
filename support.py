@@ -52,7 +52,7 @@ def score_is_palindrome_fix(tests, code_str: str) -> float:
         return 0.0
 
 import json, os, time
-from typing import Any, Dict
+from typing import Any, Dict, Iterator
 
 def append_jsonl(path: str, record: Dict[str, Any]) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -62,3 +62,14 @@ def append_jsonl(path: str, record: Dict[str, Any]) -> None:
 def now_iso() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime())
 
+def iter_jsonl(path: str) -> Iterator[Dict[str, Any]]:
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            s = line.strip()
+            if not s:
+                continue
+            try:
+                yield json.loads(s)
+            except json.JSONDecodeError:
+                # skip malformed lines
+                continue
