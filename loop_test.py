@@ -11,6 +11,7 @@ def one_run(temp=0.9):
         task   = entry["task"]          # e.g., "add"
         prompt = entry["prompt"]        # the exact prompt
         tests  = entry["tests"]         # list of tests for the task
+        answers = entry["answers"]
         # -> call model, run judge for `task`, compute reward, log
 
         #1) Call local LLM
