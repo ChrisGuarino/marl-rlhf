@@ -1,6 +1,6 @@
 # step2_eval_candidate.py
 import ollama, statistics
-from support import *  # your judge
+from support import *
 
 DATA_PATH = "data.jsonl"
 LOG_PATH = "logs/runs.jsonl"
