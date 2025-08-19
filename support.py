@@ -14,6 +14,32 @@ def clean_code(code_str: str) -> str:
         s = s[m.start():]
     return s.strip()
 
+
+def score_code(task, gen_code, tests, answers):
+    match task: 
+        case "add":
+            code = clean_code(gen_code)
+            ns = {}
+            exec(code, ns, ns)
+            passed = sum(
+                1 
+                for (a,b), expected in zip(tests, answers) #zip interates two lists at once
+                if ns["add"](a,b) == expected
+            )
+            return passed / len(tests)
+        
+        # case "average":
+        # case "factorial":
+        # case "is_palindrome":
+        # case "reverse_words":
+        # case "is_prime":
+        # case "fizzbuzz":
+        # case "merge_sorted_lists":
+        # case "csv_to_dicts":
+        case _:
+            print(f'Unknown task command {task}.')
+            
+
 def score_add_fix(code_str: str) -> float:
     """Return fraction of tests passed for the add(a,b) function."""
     try:

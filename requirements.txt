@@ -1,1 +1,3 @@
 ollama
+ollama create ppo-llama -f Modelfile
+

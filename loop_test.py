@@ -13,13 +13,12 @@ def one_run(temp=0.9):
         tests  = entry["tests"]         # list of tests for the task
         answers = entry["answers"]
         # -> call model, run judge for `task`, compute reward, log
-
         #1) Call local LLM
         resp = ollama.generate(model=MODEL_ID, prompt=prompt, options={"temperature": temp})
         code = resp["response"]
-
+        
         #2) Score the generated code
-        reward = score_is_palindrome_fix(tests, code)
+        reward = score_code(code, tests, answers)
         print("\n--- CANDIDATE ---\n", code, "\nSCORE:", reward) 
 
         #3) Log the reward
