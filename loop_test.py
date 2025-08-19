@@ -16,10 +16,11 @@ def one_run(temp=0.9):
         #1) Call local LLM
         resp = ollama.generate(model=MODEL_ID, prompt=prompt, options={"temperature": temp})
         code = resp["response"]
-        
+        print(f"\n--- CANDIDATE {task} ---\n")
+        print(code)
         #2) Score the generated code
-        reward = score_code(code, tests, answers)
-        print("\n--- CANDIDATE ---\n", code, "\nSCORE:", reward) 
+        reward = score_code(task, code, tests, answers)
+        print(f"--- SCORE: {reward} ---\n") 
 
         #3) Log the reward
         rec = {
@@ -34,9 +35,8 @@ def one_run(temp=0.9):
         append_jsonl(LOG_PATH, rec)
         
         # 4) quick console feedback
-        print("Reward:", reward)
         print("Logged to:", LOG_PATH)
 
     return reward
-scores = [one_run() for _ in range(5)]
+scores = one_run()
 print("\nSUMMARY -> scores:", scores, "avg:", statistics.mean(scores))

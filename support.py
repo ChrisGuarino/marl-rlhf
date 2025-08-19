@@ -16,20 +16,37 @@ def clean_code(code_str: str) -> str:
 
 
 def score_code(task, gen_code, tests, answers):
+    code = clean_code(gen_code)
+    ns = {}
+    exec(code, ns, ns)
     match task: 
         case "add":
-            code = clean_code(gen_code)
-            ns = {}
-            exec(code, ns, ns)
             passed = sum(
                 1 
                 for (a,b), expected in zip(tests, answers) #zip interates two lists at once
                 if ns["add"](a,b) == expected
             )
             return passed / len(tests)
-        
-        # case "average":
+        case "average":
+            passed = 0
+            # passed = sum(
+            #     1
+            #     for nums, expected in zip(tests, answers)
+            #     if ns["average"](nums) == expected
+            # )
+            # return passed / len(tests)
+            for nums, expected in zip(tests, answers):
+                if ns["average"](nums) == expected:
+                    passed +=1 
+                else: continue
+            return passed/len(tests)
         # case "factorial":
+        #     passed = sum(
+        #         1
+        #         for nums, expected in zip(tests, answers)
+        #         if ns["average"](nums) == expected
+        #     )
+        #     return passed / len(tests)
         # case "is_palindrome":
         # case "reverse_words":
         # case "is_prime":
@@ -39,23 +56,6 @@ def score_code(task, gen_code, tests, answers):
         case _:
             print(f'Unknown task command {task}.')
             
-
-def score_add_fix(code_str: str) -> float:
-    """Return fraction of tests passed for the add(a,b) function."""
-    try:
-        code = clean_code(code_str)
-        ns = {}
-        exec(code, ns, ns)# executes 'code' and writes into ns globally and locally
-        if "add" not in ns or not callable(ns["add"]):
-            return 0.0
-
-        tests = [(1,2,3), (-1,5,4), (0,0,0)]
-        passed = sum(1 for a,b,exp in tests if ns["add"](a,b) == exp)
-        return passed / len(tests)
-    except Exception:
-        traceback.print_exc()  # helpful while developing
-        return 0.0
-    
 def score_is_palindrome_fix(tests, code_str: str) -> float:
     """Return fraction of tests passed for is_palindrome(s) ignoring case & spaces."""
     try:
