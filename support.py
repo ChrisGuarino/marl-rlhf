@@ -14,6 +14,7 @@ def clean_code(code_str: str) -> str:
         s = s[m.start():]
     return s.strip()
 
+LOG_PATH = "logs/errors.jsonl"
 
 def score_code(task, gen_code, tests, answers):
     try:
@@ -23,71 +24,88 @@ def score_code(task, gen_code, tests, answers):
         exec(code, ns, ns)
         match task: 
             case "add":
-                passed = sum(
-                    1 
-                    for (a,b), expected in zip(tests, answers) #zip interates two lists at once
-                    if ns["add"](a,b) == expected
-                )
-                return passed / len(tests)
+                passed = 0
+                for (a,b),expected in zip(tests, answers): 
+                    try: 
+                        if ns["add"](a,b) == expected:
+                            passed +=1
+                    except Exception as e: 
+                        print(f'⚠️ Failed: {e}')
+                return passed/len(tests)
             case "average":
-                passed = sum(
-                    1
-                    for nums, expected in zip(tests, answers)
-                    if ns["average"](nums) == expected
-                )
-                return passed / len(tests)
+                passed = 0
+                for nums,expected in zip(tests, answers): 
+                    try: 
+                        if ns["average"](nums) == expected:
+                            passed +=1
+                    except Exception as e: 
+                        print(f'⚠️ Failed: {e}')
+                return passed/len(tests)
             case "factorial":
-                passed = sum(
-                    1
-                    for n, expected in zip(tests, answers)
-                    if ns["factorial"](n) == expected
-                )
-                return passed / len(tests)
+                passed = 0
+                for n,expected in zip(tests, answers): 
+                    try: 
+                        if ns["factorial"](n) == expected:
+                            passed +=1
+                    except Exception as e: 
+                        print(f'⚠️ Failed: {e}')
+                return passed/len(tests)
             case "is_palindrome":
-                passed = sum(
-                    1
-                    for s, expected in zip(tests, answers)
-                    if ns["is_palindrome"](s) == expected
-                )
-                return passed / len(tests)
+                passed = 0
+                for s,expected in zip(tests, answers): 
+                    try: 
+                        if ns["is_palindrome"](s) == expected:
+                            passed +=1
+                    except Exception as e: 
+                        print(f'⚠️ Failed: {e}')
+                return passed/len(tests)
             case "reverse_words":
-                passed = sum(
-                    1
-                    for s, expected in zip(tests, answers)
-                    if ns["reverse_words"](s) == expected
-                )
-                return passed / len(tests)
+                passed = 0
+                for s,expected in zip(tests, answers): 
+                    try: 
+                        if ns["reverse_words"](s) == expected:
+                            passed +=1
+                    except Exception as e: 
+                        print(f'⚠️ Failed: {e}')
+                return passed/len(tests)
             case "is_prime":
-                passed = sum(
-                    1
-                    for n, expected in zip(tests, answers)
-                    if ns["is_prime"](n) == expected
-                )
-                return passed / len(tests)
+                passed = 0
+                for n,expected in zip(tests, answers): 
+                    try: 
+                        if ns["is_prime"](n) == expected:
+                            passed +=1
+                    except Exception as e: 
+
+                        print(f'⚠️ Failed: {e}')
+                return passed/len(tests)
             case "fizzbuzz":
-                passed = sum(
-                    1
-                    for n, expected in zip(tests, answers)
-                    if ns["fizzbuzz"](n) == expected
-                )
-                return passed / len(tests)
+                passed = 0
+                for n,expected in zip(tests, answers): 
+                    try: 
+                        if ns["fizzbuzz"](n) == expected:
+                            passed +=1
+                    except Exception as e: 
+                        print(f'⚠️ Failed: {e}')
+                return passed/len(tests)
             case "merge_sorted_lists":
-                passed = sum(
-                    1
-                    for a,b, expected in zip(tests, answers)
-                    if ns["merge_sorted_lists"](a,b) == expected
-                )
-                return passed / len(tests)
+                passed = 0
+                for (a,b),expected in zip(tests, answers): 
+                    try: 
+                        if ns["merge_sorted_lists"](a,b) == expected:
+                            passed +=1
+                    except Exception as e: 
+                        print(f'⚠️ Failed: {e}')
+                return passed/len(tests)
             case "csv_to_dicts":
-                passed = sum(
-                    1
-                    for csv_str, expected in zip(tests, answers)
-                    if ns["csv_to_dicts"](csv_str) == expected
-                )
-                return passed / len(tests)
-            case _:
-                print(f'Unknown task command {task}.')
-    except: print("⚠️CASE Fault")  
+                passed = 0
+                for s,expected in zip(tests, answers): 
+                    try: 
+                        if ns["csv_to_dicts"](s) == expected:
+                            passed +=1
+                    except Exception as e: 
+                        print(f'⚠️ Failed: {e}')
+                return passed/len(tests)
+    except: pass
 
 import json, os, time
 from typing import Any, Dict, Iterator
