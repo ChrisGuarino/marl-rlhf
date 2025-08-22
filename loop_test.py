@@ -18,18 +18,20 @@ def one_run(temp=0.9):
         code = resp["response"]
         print(f"\n🟢--- CANDIDATE {task} ---")
         #2) Score the generated code
-        reward = score_code(task, code, tests, answers)
+        reward,failed,errors = score_code(task, code, tests, answers)
         print(f"🔴--- SCORE: {reward} ---") 
 
         #3) Log the reward
         rec = {
             "ts": now_iso(),
             "task_id": task,
+            "reward": reward,
+            "failed": failed,
+            "errors": errors,
+            "prompt": prompt,
             "model": MODEL_ID,
             "options": {"temperature": temp},
-            "prompt": prompt,
-            "response": code,
-            "reward": reward,
+            "response": code
         }
         append_jsonl(LOG_PATH, rec)
         

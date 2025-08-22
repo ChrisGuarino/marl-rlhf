@@ -17,6 +17,8 @@ def clean_code(code_str: str) -> str:
 LOG_PATH = "logs/errors.jsonl"
 
 def score_code(task, gen_code, tests, answers):
+    errors = []
+    failed = []
     try:
         code = clean_code(gen_code)
         print(code)
@@ -29,83 +31,112 @@ def score_code(task, gen_code, tests, answers):
                     try: 
                         if ns["add"](a,b) == expected:
                             passed +=1
+                        else: 
+                            print(f'FAILED: test = {a,b}, answer = {expected}, result = {ns["add"](a,b)}')
+                            failed.append([(a,b),expected,ns["add"](a,b)])
                     except Exception as e: 
-                        print(f'⚠️ Failed: {e}')
-                return passed/len(tests)
+                        print(f'⚠️ ERROR: {e}')
+                        errors.append(str(e))
             case "average":
                 passed = 0
                 for nums,expected in zip(tests, answers): 
                     try: 
                         if ns["average"](nums) == expected:
                             passed +=1
+                        else: 
+                            print(f'FAILED: test = {nums}, answer = {expected}, result = {ns["average"](nums)}')
+                            failed.append([nums,expected,ns["average"](nums)])
                     except Exception as e: 
-                        print(f'⚠️ Failed: {e}')
-                return passed/len(tests)
+                        print(f'⚠️ ERROR: {e}')
+                        errors.append(str(e))
             case "factorial":
                 passed = 0
                 for n,expected in zip(tests, answers): 
                     try: 
                         if ns["factorial"](n) == expected:
                             passed +=1
+                        else: 
+                            print(f'FAILED: test = {n}, answer = {expected}, result = {ns["factorial"](n)}')
+                            failed.append([n,expected,ns["factorial"](n)])
                     except Exception as e: 
-                        print(f'⚠️ Failed: {e}')
-                return passed/len(tests)
+                        print(f'⚠️ ERROR: {e}')
+                        errors.append(str(e))
             case "is_palindrome":
                 passed = 0
                 for s,expected in zip(tests, answers): 
                     try: 
                         if ns["is_palindrome"](s) == expected:
                             passed +=1
+                        else: 
+                            print(f'FAILED: test = {s}, answer = {expected}, result = {ns["is_palindrome"](s)}')
+                            failed.append([s,expected,ns["is_palindrome"](s)])
                     except Exception as e: 
-                        print(f'⚠️ Failed: {e}')
-                return passed/len(tests)
+                        print(f'⚠️ ERROR: {e}')
+                        errors.append(str(e))
             case "reverse_words":
                 passed = 0
                 for s,expected in zip(tests, answers): 
                     try: 
                         if ns["reverse_words"](s) == expected:
                             passed +=1
+                        else: 
+                            print(f'FAILED: test = {s}, answer = {expected}, result = {ns["reverse_words"](s)}')
+                            failed.append([s,expected,ns["reverse_words"](s)])
                     except Exception as e: 
-                        print(f'⚠️ Failed: {e}')
-                return passed/len(tests)
+                        print(f'⚠️ ERROR: {e}')
+                        errors.append(str(e))
             case "is_prime":
                 passed = 0
                 for n,expected in zip(tests, answers): 
                     try: 
                         if ns["is_prime"](n) == expected:
                             passed +=1
+                        else: print(f'FAILED: test = {n}, answer = {expected}, result = {ns["is_prime"](n)}')
+                        failed.append([n,expected,ns["is_prime"](n)])
                     except Exception as e: 
-
-                        print(f'⚠️ Failed: {e}')
-                return passed/len(tests)
+                        print(f'⚠️ ERROR: {e}')
+                        errors.append(str(e))
             case "fizzbuzz":
                 passed = 0
                 for n,expected in zip(tests, answers): 
                     try: 
                         if ns["fizzbuzz"](n) == expected:
                             passed +=1
+                        else: 
+                            print(f'FAILED: test = {n}, answer = {expected}, result = {ns["fizzbuzz"](n)}')
+                            failed.append([n,expected,ns["fizzbuzz"](n)])
                     except Exception as e: 
-                        print(f'⚠️ Failed: {e}')
-                return passed/len(tests)
+                        print(f'⚠️ ERROR: {e}')
+                        errors.append(str(e))
             case "merge_sorted_lists":
                 passed = 0
                 for (a,b),expected in zip(tests, answers): 
                     try: 
                         if ns["merge_sorted_lists"](a,b) == expected:
                             passed +=1
+                        else: 
+                            print(f'FAILED: test = {a,b}, answer = {expected}, result = {ns["merge_sorted_lists"](a,b)}')
+                            failed.append([(a,b),expected,ns["merge_sorted_lists"](a,b)])
                     except Exception as e: 
-                        print(f'⚠️ Failed: {e}')
-                return passed/len(tests)
+                        print(f'⚠️ ERROR: {e}')
+                        errors.append(str(e))
             case "csv_to_dicts":
                 passed = 0
                 for s,expected in zip(tests, answers): 
                     try: 
                         if ns["csv_to_dicts"](s) == expected:
                             passed +=1
+                        else: 
+                            print(f'FAILED: test = {s}, answer = {expected}, result = {ns["csv_to_dicts"](s)}')
+                            failed.append([s,expected,ns["csv_to_dicts"](s)])
                     except Exception as e: 
-                        print(f'⚠️ Failed: {e}')
-                return passed/len(tests)
-    except: pass
+                        print(f'⚠️ ERROR: {e}')
+                        errors.append(str(e))
+        pass_score = passed/len(tests)
+        return pass_score,failed,errors
+    except: 
+        print(f'Task {task} not recognized.')
+        return None,failed,errors
 
 import json, os, time
 from typing import Any, Dict, Iterator
