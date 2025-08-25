@@ -1,6 +1,7 @@
 # A tiny judge: takes model output (a code string), returns a reward in [0,1].
 
 import re, traceback
+import math
 
 def clean_code(code_str: str) -> str:
     s = code_str.strip()
@@ -41,7 +42,7 @@ def score_code(task, gen_code, tests, answers):
                 passed = 0
                 for nums,expected in zip(tests, answers): 
                     try: 
-                        if ns["average"](nums) == expected:
+                        if math.isclose(ns["average"](nums),expected):
                             passed +=1
                         else: 
                             print(f'FAILED: test = {nums}, answer = {expected}, result = {ns["average"](nums)}')
