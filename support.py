@@ -1,19 +1,53 @@
 # A tiny judge: takes model output (a code string), returns a reward in [0,1].
-
-import re, traceback
+import re
+from typing import Tuple, Dict
 import math
 
-def clean_code(code_str: str) -> str:
-    s = code_str.strip()
-    # strip ``` fences if present
-    s = re.sub(r"^\s*```(?:python|py)?\s*", "", s, flags=re.I | re.M)
-    s = re.sub(r"\s*```\s*$", "", s, flags=re.I | re.M)
-    s = s.replace("```", "")
-    # keep from first function definition onward
+def clean_code(code_str: str) -> Tuple[str, Dict[str, int]]:
+    tally = {
+        "trim_calls": 0,
+        "fences_removed": 0,
+        "prefix_fence_removed": 0,
+        "suffix_fence_removed": 0,
+        "backticks_stripped": 0,
+        "def_anchor_used": 0,
+    }
+
+    s = code_str
+    before = s
+    s = s.strip()
+    if s != before:
+        tally["trim_calls"] += 1
+
+    # ```python / ```py prefix
+    new_s, n = re.subn(r"^\s*```(?:python|py)?\s*", "", s, flags=re.I | re.M)
+    if n:
+        tally["prefix_fence_removed"] += n
+        tally["fences_removed"] += n
+    s = new_s
+
+    # ``` suffix
+    new_s, n = re.subn(r"\s*```\s*$", "", s, flags=re.I | re.M)
+    if n:
+        tally["suffix_fence_removed"] += n
+        tally["fences_removed"] += n
+    s = new_s
+
+    # any leftover ``` in the middle
+    bt_count = s.count("```")
+    if bt_count:
+        tally["backticks_stripped"] += bt_count
+        s = s.replace("```", "")
+
+    # keep from first def ...(
     m = re.search(r"(^\s*def\s+[A-Za-z_]\w*\s*\(.*)", s, flags=re.S | re.M)
     if m:
+        tally["def_anchor_used"] += 1
         s = s[m.start():]
-    return s.strip()
+
+    s = s.strip()
+    return s, tally
+
 
 LOG_PATH = "logs/errors.jsonl"
 
@@ -21,7 +55,7 @@ def score_code(task, gen_code, tests, answers):
     errors = []
     failed = []
     try:
-        code = clean_code(gen_code)
+        code, tally = clean_code(gen_code)
         print(code)
         ns = {}
         exec(code, ns, ns)
@@ -134,10 +168,10 @@ def score_code(task, gen_code, tests, answers):
                         print(f'⚠️ ERROR: {e}')
                         errors.append(str(e))
         pass_score = passed/len(tests)
-        return pass_score,failed,errors
+        return pass_score,failed,errors,tally
     except: 
         print(f'Task {task} not recognized.')
-        return None,failed,errors
+        return 0.0,failed,errors,tally
 
 import json, os, time
 from typing import Any, Dict, Iterator
