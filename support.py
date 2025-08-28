@@ -173,6 +173,10 @@ def score_code(task, gen_code, tests, answers):
         print(f'Task {task} not recognized.')
         return 0.0,failed,errors,tally
 
+def tie_breaker():
+
+    return None
+
 import json, os, time
 from typing import Any, Dict, Iterator
 

@@ -50,25 +50,30 @@ def verus_run(temp=0.9):
         else: 
             winner = "TIE"
             #Execute Tie Breaker
-
+            
 
         #3) Log the reward
         rec = {
             "ts": now_iso(),
             "task_id": task,
+            "prompt": prompt,
+            "style_a": style_a,
+            "style_b": style_b,
             "reward_a": reward_a,
             "reward_b": reward_b,
+            "winner": winner,
             "failed_a": failed_a,
             "failed_b": failed_b,
             "errors_a": errors_a,
             "errors_b": errors_b,
             "clean_tally_a": tally_a,
             "clean_tally_b": tally_b,
-            "style_a": style_a,
-            "style_b": style_b,
-            "options": {"temperature": (temp_a,temp_b),"top_p": (top_p_a,top_p_b), "top_k": (top_k_a,top_k_b)},
-            "response": (code_a,code_b),
-            "winner": winner
+            "options_a": {"temperature": temp_a,"top_p": top_p_a, "top_k": top_k_a},
+            "options_b": {"temperature": temp_b,"top_p": top_p_b, "top_k": top_k_b},
+            "raw_response_a": code_a,
+            "raw_response_b": code_b,
+            "clean_response_a": clean_code(code_a),
+            "clean_response_b": clean_code(code_b)
         }
         append_jsonl(LOG_PATH, rec)
         
