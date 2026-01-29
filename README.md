@@ -1,89 +1,71 @@
-# Project Plan: Multi-Agent Reinforcement Learning for Preference-Aligned Language Models
+# MARL-RLHF
 
-## High-Level Concept
-You create a **multi-agent environment** where multiple LLM-based agents interact to solve tasks, but each agent’s behavior is tuned using **RLHF-style preference learning**.  
+A preference data collection framework for evaluating and comparing LLM-generated code, using Ollama to run local Llama 3.2 models against a suite of coding tasks.
 
-- One “agent” will be your *target model* that’s learning.  
-- Another will be a *critic/evaluator agent* that provides “human-like” preference feedback.  
-- Additional agents can act as *collaborators or competitors*, creating **non-stationarity** in the training signal — a key MARL challenge.
+## Overview
 
-**Why This Matters:**
-- ✅ RLHF (post-training LLM improvement)
-- ✅ Multi-agent RL (non-stationary, game-theoretic elements)
-- ✅ Agentic AI orchestration (autonomous multi-role agents)
+This project builds a pipeline for collecting preference data from LLM code generation. A judge system evaluates generated Python code against test suites, and a DPO-style comparison framework logs A/B preferences between model variants with different hyperparameters.
 
----
+## How It Works
 
-## Architecture Overview
+1. **Code generation** — A local Llama 3.2 model (via Ollama) receives a coding prompt and generates a Python function
+2. **Judging** — The generated code is cleaned, extracted, and executed against predefined test cases
+3. **Scoring** — Pass/fail rates are logged per task
+4. **Preference collection** — Two model variants (different temperature, top_p, top_k, prompt style) generate competing solutions; the judge picks the winner
 
-**Agents:**
-1. **Learner Agent (LA)** — A small, fine-tunable LLM (e.g., LLaMA-2-7B, Phi-3-mini, or Mistral-7B) trained via PPO to improve on tasks.
-2. **Judge Agent (JA)** — Another LLM or rule-based evaluator that scores or gives preference feedback between LA’s outputs and a baseline.
-3. **Context Agents (CA)** — Other LLMs or scripted bots that the LA interacts with (could be cooperative or adversarial).
+## Coding Tasks
 
-**Training Loop:**
-1. **Task Generation** — CAs create a problem or interact in a game environment.
-2. **Response Generation** — LA produces an answer/strategy.
-3. **Preference Collection** — JA compares LA’s output to a reference (baseline or competing agent) and gives a preference signal.
-4. **RL Optimization** — Use PPO to fine-tune LA’s policy to maximize preference reward.
+The judge evaluates 9 coding tasks: `add`, `average`, `factorial`, `is_palindrome`, `reverse_words`, `is_prime`, `fizzbuzz`, `merge_sorted_lists`, `csv_to_dicts`.
 
----
+## Scripts
 
-## Environment & Task Ideas
+| Script | Description |
+|--------|-------------|
+| `support.py` | Judge system — code cleanup, extraction, test execution, scoring |
+| `loop_test.py` | Single-run evaluation loop, logs results to `logs/runs.jsonl` |
+| `dpo_test.py` | A/B comparison of model variants, logs preferences to `logs/prefrences.jsonl` |
+| `eval_candidate.py` | Standalone candidate code evaluator |
+| `test_llama.py` | Basic Ollama connectivity test |
+| `Modelfile` | Ollama model config (Llama 3.2:3b with system prompt) |
 
-Choose something tractable but non-trivial:
-- **Negotiation Game** — multi-agent bargaining; JA scores fairness & coherence.
-- **Collaborative Story Writing** — agents build a narrative; JA scores consistency & creativity.
-- **Code Debugging Task** — one agent writes buggy code, another fixes it; JA scores correctness.
-- **Knowledge Retrieval Challenge** — agents find & synthesize facts; JA scores relevance.
+## Requirements
 
----
+- Python 3
+- [Ollama](https://ollama.com/) with Llama 3.2 model pulled locally
 
-## Technical Stack
+```bash
+pip install -r requirements.txt
+ollama pull llama3.2:3b
+```
 
-- **Base Models:**  
-  - LLaMA-2-7B / Phi-3-mini for LA  
-  - GPT-4o-mini (API) or smaller open-source model for JA
-- **RLHF Training:**  
-  - [TRL](https://github.com/huggingface/trl) (HuggingFace’s transformers + PPO) — supports preference-based fine-tuning.
-- **Multi-Agent Orchestration:**  
-  - [`langgraph`](https://github.com/langchain-ai/langgraph) or [`autogen`](https://github.com/microsoft/autogen) for message-passing between agents.
-- **Environment:**  
-  - Custom Python framework using OpenAI Gym-like `step()` interface.
+## Usage
 
----
+```bash
+# Create the custom Ollama model
+ollama create ppo-llama -f Modelfile
 
-## Milestones
+# Run single evaluation loop
+python loop_test.py
 
-1. **Week 1-2 — RLHF Pipeline Basics**  
-   - Train LA on a single-agent text generation task using preference data from JA.  
-   - Validate PPO setup works and improves performance.
+# Run A/B preference comparison
+python dpo_test.py
+```
 
-2. **Week 3-4 — Multi-Agent Integration**  
-   - Add CAs and create interactive environment.  
-   - Introduce non-stationarity (CAs change strategies).  
+Results are logged to `logs/`.
 
-3. **Week 5 — Evaluation Framework**  
-   - Implement automatic metrics: win rate, preference score, task success rate.  
+## Project Structure
 
-4. **Week 6 — Experiments & Report**  
-   - Compare single-agent RLHF vs. multi-agent RLHF performance.  
-   - Analyze how non-stationarity impacts learning stability.  
-
----
-
-## Final Deliverables
-
-- **Open-source repo** with training scripts, environment code, and evaluation tools.  
-- **Technical blog post / Medium article**: “Teaching AI Agents to Work Together (and Compete) via RLHF.”  
-- **Slide deck** summarizing research question, method, results, and relevance to IBM’s AI direction.  
-- Optional: submit to **NeurIPS Workshop on Multi-Agent Learning** or **ICLR RLHF workshop**.
-
----
-
-## Outcomes
-
-By completing this project, you’ll have:
-- A hands-on demonstration of RLHF
-- Experience with MARL and agentic AI orchestration
-- A showcase directly relevant to IBM’s **post-training LLM improvement** and **multi-agent systems** initiatives
+```
+marl-rlhf/
+├── support.py            # Judge system and test suites
+├── loop_test.py          # Single-run evaluation
+├── dpo_test.py           # A/B preference collection
+├── eval_candidate.py     # Candidate evaluator
+├── test_llama.py         # Ollama connectivity test
+├── Modelfile             # Custom Ollama model definition
+├── data.jsonl            # Task prompts
+├── data/                 # Additional data files
+├── logs/                 # Evaluation and preference logs
+├── requirements.txt
+└── README.md
+```
